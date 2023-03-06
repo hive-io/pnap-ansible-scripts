@@ -1,0 +1,18 @@
+servers:
+  hosts:
+    fabric-test:
+      description: "hive-fabric"
+      os: ubuntu/focal
+      type: d2.c2.large
+      location: PHX
+      ssh_key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+      install_default_ssh_keys: true
+      ssh_key_ids: []
+      reservation_id: Null
+      pricing_model: "HOURLY"
+      network_type: "PUBLIC_AND_PRIVATE"
+      os_user: "admin1"
+      admin_password: "h1v3P@ss1"
+      os_image_url: "https://binaries.hiveio.com/Hive+Fabric/GA/Hive_Fabric_8/8.4.4/hiveio-fabric-v8.4.4-1094.tar.xz"
+      cloud_init_user_data: ""
+

@@ -1,0 +1,15 @@
+- name: reset servers
+  hosts: servers
+  gather_facts: false
+  vars_files:
+    - ~/.pnap/config.yaml
+  collections:
+    - phoenixnap.bmc
+  tasks:
+  - name: Destroying server
+    delegate_to: localhost
+    phoenixnap.bmc.server:
+      client_id: "{{clientId}}"
+      client_secret: "{{clientSecret}}"
+      hostnames: "{{ inventory_hostname }}"
+      state: absent
