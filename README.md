@@ -26,6 +26,26 @@ Now install the Ansible collection by running:
 
     ansible-galaxy collection install phoenixnap.bmc
 
+## Authentication
+
+You need to create a configuration file called `config.yaml` and save it in the user home directory. This file is used to authenticate access to your Bare Metal Cloud resources.
+
+In your home directory, create a folder `.pnap` and a `config.yaml` file inside it.
+
+This file needs to contain only two lines of code:
+
+    clientId: <enter your client id>
+    clientSecret: <enter your client secret>
+
+To get the values for the clientId and clientSecret, follow these steps:
+
+1. [Log in to the Bare Metal Cloud portal](https://bmc.phoenixnap.com).
+2. On the left side menu, click on API Credentials.
+3. Click the Create Credentials button.
+4. Fill in the Name and Description fields, select the permissions scope and click Create.
+5. In the table, click on Actions and select View Credentials from the dropdown.
+6. Copy the values from the Client ID and Client Secret fields into your `config.yaml` file.
+
 to deploy and install to a **d2.c2.large** server in **Phoenix** at an **hourly rate** run:
 
     

@@ -32,9 +32,10 @@
       pricing_model: "{{ hostvars[inventory_hostname].pricing_model }}"
       network_type: "{{ hostvars[inventory_hostname].network_type }}"
       private_network_configuration_type: USER_DEFINED
+      private_network_gateway_address: {{ hostvars[inventory_hostname].network_gateway }}
       private_networks:
-        - id: 637ba45ad36aea49a8636083
-          ips: [10.0.0.10 ]
+        - id: "{{ hostvars[inventory_hostname].network }}"
+          ips: [ 10.0.0.10 ]
           dhcp: false
       install_os_to_ram: true
       state: present
@@ -48,9 +49,13 @@
     tags: 
       - debug
 
-  - name: Set ansible_host to public IP address
+# - name: Set ansible_host to public IP address
+#     set_fact:
+#       ansible_host: "{{ result.servers.0.publicIpAddresses.0 }}"
+
+  - name: Set ansible_host to private IP address
     set_fact:
-      ansible_host: "{{ result.servers.0.publicIpAddresses.0 }}"
+      ansible_host: "{{ result.servers.0.privateIpAddresses.0 }}"
 
 - name: Perform work on provisioned BMC servers
   hosts: servers
@@ -70,15 +75,20 @@
       sleep: 1
       connect_timeout: 5
       timeout: 60
+
+  - name: set nameserver
+    shell: |
+      echo "DNS={{ hostvars[inventory_hostname].network_dns }} >> /etc/systemd/resolved.conf" && systemctl restart systemd-resolved
+
   - name: Install tools
     apt:
       pkg:
         - zfsutils-linux
         - fdisk
     # no_log: true
-    register: ssh
+    register: install
     retries: 3
-    until: ssh is not failed
+    until: install is not failed
 
   - name: Capture block devices on server
     command: "lsblk  --tree -J -o KNAME,PATH,RO,SIZE,TYPE -x KNAME"
@@ -114,10 +124,6 @@
     shell: |
       [ -d /sys/firmware/efi ] &&  echo UEFI || echo Legacy
     register: os_boot_mode
-  
-  # - name: test
-  #   debug:
-  #     msg: "{{ result.servers.0.networkConfiguration.gatewayAddress }}"
 
   - name: prod
     set_fact:
@@ -146,7 +152,7 @@
                   address: {{ prod.value.addresses[0] | ipaddr('address') }}
                   netmask: {{ prod.value.addresses[0] | ipaddr('netmask') }}
                   gateway: {{ prod.value.gateway4 }}
-                  dns: {{ prod.value.nameservers.addresses }}
+                  dns: {{ hostvars[inventory_hostname].network_dns }}
                 storage:
                   disabled: true
 
