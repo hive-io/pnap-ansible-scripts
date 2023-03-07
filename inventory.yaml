@@ -16,6 +16,6 @@ servers:
       network_gateway: "10.0.0.1"
       network_dns: "8.8.8.8"
       os_user: "admin1"
-      admin_password: "h1v3P@ss1"
+      admin_password: "YOUR-ADMIN1-PASSWORD"
       os_image_url: "https://binaries.hiveio.com/Hive+Fabric/GA/Hive_Fabric_8/8.4.4/hiveio-fabric-v8.4.4-1094.tar.xz"
 

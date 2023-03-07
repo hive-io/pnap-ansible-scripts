@@ -1,6 +1,9 @@
 <h1 align="center">
-  Installing hive fabric On phoenixNAP BMC
+  Installing Hive Fabric On phoenixNAP BMC
 </h1>
+
+<p>Ansible playbooks for installing Hive Fabric on a BMC server 
+based on <a href="https://github.com/phoenixnap/ansible-ramos-bmc">phoenixnap/ansible-ramos-bmc</a></p>
 
 ## Requirements
 
@@ -46,8 +49,21 @@ To get the values for the clientId and clientSecret, follow these steps:
 5. In the table, click on Actions and select View Credentials from the dropdown.
 6. Copy the values from the Client ID and Client Secret fields into your `config.yaml` file.
 
-to deploy and install to a **d2.c2.large** server in **Phoenix** at an **hourly rate** run:
+## Ansible Playbooks
+
+The Ansible Playbook allows you to provision and install hive-fabric on a Bare Metal Cloud server.
+* **_inventory.yaml_** contains all the information about the BMC server.
+* **_provision.yaml_** deploys the BMC server using the RAM OS feature. The playbook uses the information from **_inventory.yaml_**
+
+The defaults will use a **d2.c2.large** server in **Phoenix** at an **hourly rate**
+
+to deploy and install fabric run:
 
     
     ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook provision.yaml -i inventory.yaml
+
+
+to destroy the server:
+
+    ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook destroy.yaml -i inventory.yaml
 
