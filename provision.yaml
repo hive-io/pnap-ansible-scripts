@@ -32,7 +32,7 @@
       pricing_model: "{{ hostvars[inventory_hostname].pricing_model }}"
       network_type: "{{ hostvars[inventory_hostname].network_type }}"
       private_network_configuration_type: USER_DEFINED
-      private_network_gateway_address: {{ hostvars[inventory_hostname].network_gateway }}
+      private_network_gateway_address: "{{ hostvars[inventory_hostname].network_gateway }}"
       private_networks:
         - id: "{{ hostvars[inventory_hostname].network }}"
           ips: [ 10.0.0.10 ]
