@@ -2,20 +2,20 @@ servers:
   hosts:
     fabric-test:
       description: "hive-fabric"
-      os: ubuntu/focal
-      type: d2.c2.large
-      location: PHX
+      os: ubuntu/jammy
+      type: s2.c2.medium
+      location: ASH
       ssh_key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
       install_default_ssh_keys: true
       ssh_key_ids: []
       reservation_id: Null
       pricing_model: "HOURLY"
-      # network_type: "PUBLIC_AND_PRIVATE"
-      network_type: "PRIVATE_ONLY"
-      network: "637ba45ad36aea49a8636083"
-      network_gateway: "10.0.0.1"
+      network_type: "PUBLIC_AND_PRIVATE"
+      #network_type: "PRIVATE_ONLY"
+      #network: "637ba45ad36aea49a8636083"
+      #network_gateway: "10.0.0.1"
       network_dns: "8.8.8.8"
-      os_user: "admin1"
+      network_ips: [ 10.0.0.10 ]
       admin_password: "YOUR-ADMIN1-PASSWORD"
-      os_image_url: "https://binaries.hiveio.com/Hive+Fabric/GA/Hive_Fabric_8/8.4.4/hiveio-fabric-v8.4.4-1094.tar.xz"
+      os_image_url: "https://binaries.hiveio.com/Hive+Fabric/GA/Hive_Fabric_8/8.5.2/hiveio-fabric-v8.5.2-166.tar.xz"
 

@@ -31,12 +31,12 @@
       reservation_id: "{{ hostvars[inventory_hostname].reservation_id }}"
       pricing_model: "{{ hostvars[inventory_hostname].pricing_model }}"
       network_type: "{{ hostvars[inventory_hostname].network_type }}"
-      private_network_configuration_type: USER_DEFINED
-      private_network_gateway_address: "{{ hostvars[inventory_hostname].network_gateway }}"
-      private_networks:
-        - id: "{{ hostvars[inventory_hostname].network }}"
-          ips: [ 10.0.0.10 ]
-          dhcp: false
+      # private_network_configuration_type: USER_DEFINED
+      # private_network_gateway_address: "{{ hostvars[inventory_hostname].network_gateway }}"
+      # private_networks:
+      #   - id: "{{ hostvars[inventory_hostname].network }}"
+      #     ips: "{{ hostvars[inventory_hostname].network_ips }}"
+      #     dhcp: false
       install_os_to_ram: true
       state: present
     retries: 1
@@ -49,13 +49,13 @@
     tags: 
       - debug
 
-# - name: Set ansible_host to public IP address
-#     set_fact:
-#       ansible_host: "{{ result.servers.0.publicIpAddresses.0 }}"
-
-  - name: Set ansible_host to private IP address
+  - name: Set ansible_host to public IP address
     set_fact:
-      ansible_host: "{{ result.servers.0.privateIpAddresses.0 }}"
+      ansible_host: "{{ result.servers.0.publicIpAddresses.0 }}"
+
+  # - name: Set ansible_host to private IP address
+  #   set_fact:
+  #     ansible_host: "{{ result.servers.0.privateIpAddresses.0 }}"
 
 - name: Perform work on provisioned BMC servers
   hosts: servers
@@ -75,10 +75,20 @@
       sleep: 1
       connect_timeout: 5
       timeout: 60
+  - name: write resolved.conf
+    copy:
+      dest: /tmp/cloud-init.yaml
+      content: |  
+        [Resolve]
+        DNS={{ hostvars[inventory_hostname].network_dns }}
+    register: resolveConf
+    retries: 3
+    until: resolveConf is not failed
 
-  - name: set nameserver
-    shell: |
-      echo "DNS={{ hostvars[inventory_hostname].network_dns }} >> /etc/systemd/resolved.conf" && systemctl restart systemd-resolved
+  - name: restart systemd-resolved
+    command: |
+      systemctl restart systemd-resolved
+    register: restart_resolved
 
   - name: Install tools
     apt:
@@ -127,7 +137,11 @@
 
   - name: prod
     set_fact:
-      prod: "{{ (vlans | dict2items | selectattr('value', 'contains', 'gateway4'))[0] }}"
+      prod: "{{ (vlans | dict2items | selectattr('value', 'contains', 'routes'))[0] }}"
+  
+  # - name: Print prod
+  #   debug:
+  #     var: prod
 
   - name: write hive cloud-init
     copy:
@@ -151,7 +165,7 @@
                   vlan : {{ prod.value.id }}
                   address: {{ prod.value.addresses[0] | ipaddr('address') }}
                   netmask: {{ prod.value.addresses[0] | ipaddr('netmask') }}
-                  gateway: {{ prod.value.gateway4 }}
+                  gateway: {{ prod.value.routes[0].via }}
                   dns: {{ hostvars[inventory_hostname].network_dns }}
                 storage:
                   disabled: true
